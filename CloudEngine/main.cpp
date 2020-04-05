@@ -12,15 +12,19 @@ void processInput(GLFWwindow* window);
 
 int main() {
 	GLFWwindow* window = initWindow();
-	SquareShape shape = SquareShape(glm::vec4(0, 0, 0, 1), glm::vec4(100, 0, 0, 0));
+	Camera cam = Camera(glm::vec4(0, 0, 0, 1));
+	SquareShape shape = SquareShape(glm::vec4(0, 0, 0, 1), glm::vec4(0, 0, 0, 0), glm::vec4(1, 1, 1, 1), glm::vec4(100, 0, 0, 0));
+	shape.attachTexture("./container2.png");
+	SquareShape shape2 = SquareShape(glm::vec4(1.5, 1.5, 0, 1), glm::vec4(0, 0, 0, 0), glm::vec4(1, 1, 1, 1), glm::vec4(100, 0, 0, 0));
 
 	while (!glfwWindowShouldClose(window)) {
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		shape.Move();
-		shape.Draw();
+		shape.move();
+		shape.draw();
+		shape2.draw();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

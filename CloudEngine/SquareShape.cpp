@@ -1,10 +1,7 @@
 #include "SquareShape.h"
-#include <vector>
-#include <glm/glm/gtx/string_cast.hpp>
 
-SquareShape::SquareShape(glm::vec4 position, glm::vec4 color)
+SquareShape::SquareShape(glm::vec4 position, glm::vec4 rotation, glm::vec4 scale, glm::vec4 color):Entity(position, rotation, scale)
 {
-	this->position = position;
 	this->color = color;
 	float vertices[] = {
 	 0.5f,  0.5f, 0.0f, 1.0f, 1.0f, // top right
@@ -44,42 +41,85 @@ SquareShape::SquareShape(glm::vec4 position, glm::vec4 color)
 	shader = Shader("./shape.vs", "./shape.fs");
 }
 
-void SquareShape::Draw()
+
+void SquareShape::draw()
 {
 	shader.Use();
-	shader.setVec4("Position", position.x, position.y, position.z, position.w);
-	glBindVertexArray(VAO);
-	//glDrawElements(GL_TRIANGLES, 0, 20);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+	if (useTexture) {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
+	}
 	
+	shader.setVec4("Position", position.x, position.y, position.z, position.w);
+	shader.setBool("useTexture", useTexture);
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-void SquareShape::Move()
+void SquareShape::move()
 {
 	GLFWwindow* window = glfwGetCurrentContext();
 	glm::mat4 translationMatrix = glm::mat4(1.0f);
 	glm::vec3 movementVector = glm::vec3(0.0f);
 
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_UP)) {
 		movementVector.y += 1;
 	}
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_DOWN)) {
 		movementVector.y -= 1;
 		
 	}
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT)) {
 		movementVector.x += 1;
 	}
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT)) {
 		movementVector.x -= 1;
 	}
 	if (movementVector != glm::vec3()) {
 		movementVector = glm::clamp(movementVector, -1.0f, 1.0f) * speed;
 		translationMatrix = glm::translate(translationMatrix, movementVector);
 		position = translationMatrix * position;
+		if (hasCamera) {
+			this->camera.move(translationMatrix);
+		}
 	}
 	
+}
+
+void SquareShape::attachCamera(Camera camera)
+{
+	this->camera = camera;
+	hasCamera = true;
+}
+
+void SquareShape::attachTexture(const char* path)
+{
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	stbi_set_flip_vertically_on_load(true);
+
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
+
+	if (data) {
+		GLenum format = nrChannels > 3 ? GL_RGBA : GL_RGB;
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		shader.Use();
+		useTexture = true;
+		shader.setInt("texture", 0);
+	}
+	else {
+		std::cout << "Failed to load texture" << std::endl;
+	}
+	stbi_image_free(data);
 }
 
 

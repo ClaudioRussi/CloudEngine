@@ -99,3 +99,13 @@ void Shader::setVec4(const std::string& name, float x, float y, float z, float w
 {
 	glUniform4f(glGetUniformLocation(shaderProgram, name.c_str()), x, y, z, w);
 }
+
+void Shader::setInt(const std::string& name, int val) const
+{
+	glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), val);
+}
+
+void Shader::setBool(const std::string& name, bool val) const
+{
+	glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), val);
+}

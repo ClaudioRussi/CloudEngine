@@ -7,20 +7,28 @@
 #include <iostream>
 
 #include "Shader.h"
+#include "Camera.h"
+#include "stb_image.h"
+#include "Entity.h"
 
-class SquareShape
+class SquareShape:Entity
 {
 	
 	public:
+		SquareShape(glm::vec4 position, glm::vec4 rotation, glm::vec4 scale, glm::vec4 color);
 		//This should be called every frame
-		void Draw();
-		void Move();
-		SquareShape(glm::vec4 position, glm::vec4 color);
+		void draw();
+		void move();
+		void attachCamera(Camera camera);
+		void attachTexture(const char* path);
 	private:
-		glm::vec4 position;
-		float speed = 0.001;
+		float speed = 0.001f;
 		glm::vec4 color;
 		unsigned int VBO, VAO, EBO;
 		Shader shader;
+		Camera camera;
+		bool hasCamera = false;
+		unsigned int texture;
+		bool useTexture = false;
 };
 
