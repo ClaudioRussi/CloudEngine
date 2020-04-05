@@ -1,17 +1,26 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <glm/glm/glm.hpp>
+#include <glm/glm/matrix.hpp>
+#include <glm/glm/gtc/type_ptr.hpp>
+#include "SquareShape.h"
 
 GLFWwindow* initWindow();
 void frameBufferSizeCallback(GLFWwindow* window, int width, int height);
+void processInput(GLFWwindow* window);
 
 int main() {
 	GLFWwindow* window = initWindow();
+	SquareShape shape = SquareShape(glm::vec4(0, 0, 0, 1), glm::vec4(100, 0, 0, 0));
 
-	while (true) {
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+	while (!glfwWindowShouldClose(window)) {
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+		shape.Move();
+		shape.Draw();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -50,3 +59,4 @@ GLFWwindow* initWindow()
 void frameBufferSizeCallback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
+
