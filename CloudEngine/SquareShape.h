@@ -11,13 +11,14 @@
 #include "stb_image.h"
 #include "Entity.h"
 
-class SquareShape:Entity
+class SquareShape: public Entity
 {
 	
 	public:
 		SquareShape(glm::vec4 position, glm::vec4 rotation, glm::vec4 scale, glm::vec4 color);
 		//This should be called every frame
 		void draw();
+		void process();
 		void move();
 		void attachCamera(Camera camera);
 		void attachTexture(const char* path);

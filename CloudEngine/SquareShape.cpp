@@ -1,7 +1,10 @@
 #include "SquareShape.h"
 
-SquareShape::SquareShape(glm::vec4 position, glm::vec4 rotation, glm::vec4 scale, glm::vec4 color):Entity(position, rotation, scale)
+SquareShape::SquareShape(glm::vec4 position, glm::vec4 rotation, glm::vec4 scale, glm::vec4 color):Entity()
 {
+	this->position = position;
+	this->rotation = rotation;
+	this->scale = scale;
 	this->color = color;
 	float vertices[] = {
 	 0.5f,  0.5f, 0.0f, 1.0f, 1.0f, // top right
@@ -54,6 +57,11 @@ void SquareShape::draw()
 	shader.setBool("useTexture", useTexture);
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+}
+
+void SquareShape::process() {
+	move();
+	draw();
 }
 
 void SquareShape::move()
