@@ -14,7 +14,7 @@ void StateManager::addInstantiableEntity(InstantiableEntity* entity)
 	instantiableEntities.push_back(entity);
 }
 
-void StateManager::processEntities()
+void StateManager::processEntities(float time)
 {
 	for (Entity* ent : entities) {
 		ent->process();
@@ -32,4 +32,9 @@ void StateManager::destroyEntity(Entity* entity)
 void StateManager::destroyInstantiableEntity(InstantiableEntity* entity)
 {
 	instantiableEntities.erase(std::find(instantiableEntities.begin(), instantiableEntities.end(), entity));
+}
+
+void StateManager::setMainCamera(Camera* cam)
+{
+	mainCamera = cam;
 }
